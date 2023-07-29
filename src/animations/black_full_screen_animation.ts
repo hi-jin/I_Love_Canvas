@@ -1,43 +1,51 @@
-import AbstractAnimation from "../core/abstract_animation";
+import DrawRecord from "../draw_stack/draw_record";
 
-export default class BlackFullScreenAnimation extends AbstractAnimation {
-    private _fullScreenCanvas: HTMLCanvasElement;
-    private _midPoint: { x: number, y: number };
-    private _amountToMove: number;
-    private _amountToMovePerMillisecond: number;
+export default class BlackFullScreenAnimation extends DrawRecord {
+    private _duration: number;
+    private _startPoint!: { x: number, y: number };
+    private _amountToMove!: number;
+    private _amountToMovePerMillisecond!: number;
+    private _ctx!: CanvasRenderingContext2D;
+    private _clearCtx!: (ctx: CanvasRenderingContext2D) => void;
 
-    constructor(fullScreenCanvas: HTMLCanvasElement, duration: number) {
-        super(duration);
-        this._fullScreenCanvas = fullScreenCanvas;
-        this._midPoint = {
-            x: Math.random() * this._fullScreenCanvas.width,
-            y: Math.random() * this._fullScreenCanvas.height
-        };
-        this._amountToMove = Math.max(this._midPoint.x, this._midPoint.y, this._fullScreenCanvas.width - this._midPoint.x, this._fullScreenCanvas.height - this._midPoint.y) * 2;
-        this._amountToMovePerMillisecond = this._amountToMove / this.duration;
+    constructor(duration: number) {
+        super();
+        this._duration = duration;
     }
 
-    protected _animate(t: DOMHighResTimeStamp): void {
-        this._currentTickTime = t;
+    animate(ctx: CanvasRenderingContext2D, clearCtx: (ctx: CanvasRenderingContext2D) => void): void {
+        this._startPoint = {
+            x: Math.random() * ctx.canvas.width,
+            y: Math.random() * ctx.canvas.height
+        };
+        this._amountToMove = Math.max(this._startPoint.x, this._startPoint.y, ctx.canvas.width - this._startPoint.x, ctx.canvas.height - this._startPoint.y) * 2;
+        this._amountToMovePerMillisecond = this._amountToMove / this._duration;
+        this._ctx = ctx;
+        this._clearCtx = clearCtx;
 
-        const context = this._fullScreenCanvas.getContext('2d');
-        if (!context) return;
+        requestAnimationFrame(this._animate.bind(this));
+    }
 
-        if (this.isFinished) {
-            context.fillStyle = 'black';
-            context.fillRect(0, 0, this._fullScreenCanvas.width, this._fullScreenCanvas.height);
+    private _animate(t: DOMHighResTimeStamp): void {
+        if (t >= this._duration) {
+            this.draw(this._ctx);
             return;
         }
 
-        context.clearRect(0, 0, this._fullScreenCanvas.width, this._fullScreenCanvas.height);
+        this._clearCtx(this._ctx);
 
-        context.fillStyle = 'black';
-        context.arc(this._midPoint.x, this._midPoint.y, this._amountToMove * this._easeInExpo(this._amountToMovePerMillisecond * this._currentTickTime / this._amountToMove), 0, Math.PI * 2);
-        context.fill();
-        
+        this._ctx.fillStyle = 'black';
+        this._ctx.arc(this._startPoint.x, this._startPoint.y, this._amountToMove * this._easeInExpo(this._amountToMovePerMillisecond * t / this._amountToMove), 0, Math.PI * 2);
+        this._ctx.fill();
+
         requestAnimationFrame(this._animate.bind(this));
     }
-    
+
+    draw(ctx: CanvasRenderingContext2D): void {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
     private _easeInExpo(x: number): number {
         return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
     }

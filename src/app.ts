@@ -1,10 +1,10 @@
 import BlackFullScreenAnimation from "./animations/black_full_screen_animation";
-import AbstractAnimation from "./core/abstract_animation";
 import BrowserScreen from "./core/screen";
+import DrawStack from "./draw_stack/draw_stack";
 
 export default class App {
+    private stack: DrawStack = new DrawStack();
     private canvas: HTMLCanvasElement = document.createElement('canvas');
-    private animation?: AbstractAnimation;
 
     constructor() {
         this.removeStyles();
@@ -25,8 +25,10 @@ export default class App {
         this.removeCanvas();
         this.setCanvasStyle();
         document.body.appendChild(this.canvas);
-        this.animation = new BlackFullScreenAnimation(this.canvas, 1000);
-        this.animation.start();
+        const ctx = this.canvas.getContext('2d');
+        if (ctx) {
+            this.stack.pushAndAnimate(new BlackFullScreenAnimation(1000), ctx);
+        }
     }
 
     private removeCanvas(): void {
@@ -42,7 +44,7 @@ export default class App {
 
         const context = this.canvas.getContext('2d');
         if (!context) return;
-        
+
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         context.fillStyle = 'black';
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
