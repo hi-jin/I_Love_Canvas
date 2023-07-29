@@ -14,7 +14,7 @@ export default class BlackFullScreenAnimation extends DrawRecord {
         this._duration = duration;
     }
 
-    animate(ctx: CanvasRenderingContext2D, clearCtx: (ctx: CanvasRenderingContext2D) => void): void {
+    animate(ctx: CanvasRenderingContext2D, clearCtx: (ctx: CanvasRenderingContext2D) => void): Promise<void> {
         this._startPoint = {
             x: Math.random() * ctx.canvas.width,
             y: Math.random() * ctx.canvas.height
@@ -24,12 +24,15 @@ export default class BlackFullScreenAnimation extends DrawRecord {
         this._ctx = ctx;
         this._clearCtx = clearCtx;
 
-        requestAnimationFrame(this._animate.bind(this, performance.now()));
+        return new Promise((resolve, _) => {
+            requestAnimationFrame(this._animate.bind(this, performance.now(), resolve));
+        });
     }
 
-    private _animate(startAt: DOMHighResTimeStamp, t: DOMHighResTimeStamp): void {
+    private _animate(startAt: DOMHighResTimeStamp, resolve: (_: void) => void, t: DOMHighResTimeStamp): void {
         if (t - startAt >= this._duration) {
             this.draw(this._ctx);
+            resolve();
             return;
         }
 
@@ -39,7 +42,7 @@ export default class BlackFullScreenAnimation extends DrawRecord {
         this._ctx.arc(this._startPoint.x, this._startPoint.y, this._amountToMove * easeInExpo(this._amountToMovePerMillisecond * (t - startAt) / this._amountToMove), 0, Math.PI * 2);
         this._ctx.fill();
 
-        requestAnimationFrame(this._animate.bind(this, startAt));
+        requestAnimationFrame(this._animate.bind(this, startAt, resolve));
     }
 
     draw(ctx: CanvasRenderingContext2D): void {

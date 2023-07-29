@@ -10,7 +10,7 @@ export default abstract class DrawRecord {
     abstract animate(
         ctx: CanvasRenderingContext2D,
         clearCtx: (ctx: CanvasRenderingContext2D) => void,
-    ): void;
+    ): Promise<void>;
 
     /**
      * 애니메이션 완료 후 결과만 그리는 함수

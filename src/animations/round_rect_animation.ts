@@ -19,13 +19,22 @@ export default class RoundRectAnimation extends DrawRecord {
         this.radius = radius;
     }
 
-    animate(ctx: CanvasRenderingContext2D, clearCtx: (ctx: CanvasRenderingContext2D) => void): void {
-        requestAnimationFrame(this._animate.bind(this, ctx, clearCtx, performance.now()));
+    animate(ctx: CanvasRenderingContext2D, clearCtx: (ctx: CanvasRenderingContext2D) => void): Promise<void> {
+        return new Promise((resolve, _) => {
+            requestAnimationFrame(this._animate.bind(this, ctx, clearCtx, performance.now(), resolve));
+        });
     }
 
-    private _animate(ctx: CanvasRenderingContext2D, clearCtx: (ctx: CanvasRenderingContext2D) => void, startAt: DOMHighResTimeStamp, t: DOMHighResTimeStamp): void {
+    private _animate(
+        ctx: CanvasRenderingContext2D,
+        clearCtx: (ctx: CanvasRenderingContext2D) => void,
+        startAt: DOMHighResTimeStamp,
+        resolve: (_: void) => void,
+        t: DOMHighResTimeStamp,
+    ): void {
         if (t - startAt >= this.duration) {
             this.draw(ctx);
+            resolve();
             return;
         }
 
@@ -39,7 +48,7 @@ export default class RoundRectAnimation extends DrawRecord {
         ctx.closePath();
         ctx.fill();
 
-        requestAnimationFrame(this._animate.bind(this, ctx, clearCtx, startAt));
+        requestAnimationFrame(this._animate.bind(this, ctx, clearCtx, startAt, resolve));
     }
     
     draw(ctx: CanvasRenderingContext2D): void {
