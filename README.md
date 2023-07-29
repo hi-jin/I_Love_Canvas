@@ -2,4 +2,4 @@
 Canvas prac repo (for Chromind project)
 
 # Animations
-![black full screen animation](https://github.com/hi-jin/I_Love_Canvas/assets/51053567/c7573952-7d4c-4956-b13a-1891c22c3229)
+![화면 기록 2023-07-30 오전 3 31 58](https://github.com/hi-jin/I_Love_Canvas/assets/51053567/456511f0-06b5-4946-b216-a559600b4256)
