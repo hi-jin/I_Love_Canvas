@@ -1,4 +1,5 @@
 import BlackFullScreenAnimation from "./animations/black_full_screen_animation";
+import RoundRectAnimation from "./animations/round_rect_animation";
 import BrowserScreen from "./core/screen";
 import DrawStack from "./draw_stack/draw_stack";
 
@@ -10,10 +11,18 @@ export default class App {
         this.removeStyles();
         this.setCanvas();
         BrowserScreen.instance.addOnResizeCallback(() => this.onResize());
+        BrowserScreen.instance.addOnClickCallback(this.onClick.bind(this));
     }
 
     private onResize(): void {
         this.setCanvasStyle();
+    }
+
+    private onClick(e: MouseEvent): void {
+        const ctx = this.canvas.getContext('2d');
+        if (ctx) {
+            this.stack.pushAndAnimate(new RoundRectAnimation(200, e.clientX, e.clientY, 100, 50, 10), ctx);
+        }
     }
 
     private removeStyles(): void {

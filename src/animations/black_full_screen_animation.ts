@@ -1,4 +1,5 @@
 import DrawRecord from "../draw_stack/draw_record";
+import { easeInExpo } from "./timing_functions";
 
 export default class BlackFullScreenAnimation extends DrawRecord {
     private _duration: number;
@@ -23,11 +24,11 @@ export default class BlackFullScreenAnimation extends DrawRecord {
         this._ctx = ctx;
         this._clearCtx = clearCtx;
 
-        requestAnimationFrame(this._animate.bind(this));
+        requestAnimationFrame(this._animate.bind(this, performance.now()));
     }
 
-    private _animate(t: DOMHighResTimeStamp): void {
-        if (t >= this._duration) {
+    private _animate(startAt: DOMHighResTimeStamp, t: DOMHighResTimeStamp): void {
+        if (t - startAt >= this._duration) {
             this.draw(this._ctx);
             return;
         }
@@ -35,18 +36,14 @@ export default class BlackFullScreenAnimation extends DrawRecord {
         this._clearCtx(this._ctx);
 
         this._ctx.fillStyle = 'black';
-        this._ctx.arc(this._startPoint.x, this._startPoint.y, this._amountToMove * this._easeInExpo(this._amountToMovePerMillisecond * t / this._amountToMove), 0, Math.PI * 2);
+        this._ctx.arc(this._startPoint.x, this._startPoint.y, this._amountToMove * easeInExpo(this._amountToMovePerMillisecond * (t - startAt) / this._amountToMove), 0, Math.PI * 2);
         this._ctx.fill();
 
-        requestAnimationFrame(this._animate.bind(this));
+        requestAnimationFrame(this._animate.bind(this, startAt));
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    }
-
-    private _easeInExpo(x: number): number {
-        return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
     }
 }

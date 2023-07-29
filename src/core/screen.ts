@@ -26,4 +26,8 @@ export default class BrowserScreen {
     public addOnResizeCallback(callback: Function): void {
         window.addEventListener('resize', () => callback());
     }
+
+    public addOnClickCallback(callback: (e: MouseEvent) => void): void {
+        window.addEventListener('click', (e: MouseEvent) => callback(e));
+    }
 }
