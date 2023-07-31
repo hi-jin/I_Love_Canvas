@@ -1,3 +1,4 @@
+import BrowserScreen from "../core/screen";
 import DrawRecord from "../draw_stack/draw_record";
 import { easeInExpo } from "./timing_functions";
 
@@ -16,10 +17,10 @@ export default class BlackFullScreenAnimation extends DrawRecord {
 
     animate(ctx: CanvasRenderingContext2D, clearCtx: (ctx: CanvasRenderingContext2D) => void): Promise<void> {
         this._startPoint = {
-            x: Math.random() * ctx.canvas.width,
-            y: Math.random() * ctx.canvas.height
+            x: Math.random() * BrowserScreen.instance.width,
+            y: Math.random() * BrowserScreen.instance.height
         };
-        this._amountToMove = Math.max(this._startPoint.x, this._startPoint.y, ctx.canvas.width - this._startPoint.x, ctx.canvas.height - this._startPoint.y) * 2;
+        this._amountToMove = Math.max(this._startPoint.x, this._startPoint.y, BrowserScreen.instance.width - this._startPoint.x, BrowserScreen.instance.height - this._startPoint.y) * 2;
         this._amountToMovePerMillisecond = this._amountToMove / this._duration;
         this._ctx = ctx;
         this._clearCtx = clearCtx;
@@ -47,6 +48,6 @@ export default class BlackFullScreenAnimation extends DrawRecord {
 
     draw(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillRect(0, 0, BrowserScreen.instance.width, BrowserScreen.instance.height);
     }
 }

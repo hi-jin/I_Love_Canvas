@@ -1,3 +1,4 @@
+import BrowserScreen from "../core/screen";
 import DrawRecord from "./draw_record";
 
 /**
@@ -45,7 +46,7 @@ export default class DrawStack {
     }
 
     eraseAll(ctx: CanvasRenderingContext2D) {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.clearRect(0, 0, BrowserScreen.instance.width, BrowserScreen.instance.height);
     }
 
     deleteAll() {

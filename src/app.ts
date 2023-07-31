@@ -50,14 +50,17 @@ export default class App {
 
     private setCanvasStyle(): void {
         const browserScreen = BrowserScreen.instance;
-        this.canvas.width = browserScreen.width;
-        this.canvas.height = browserScreen.height;
+        this.canvas.width = browserScreen.width * window.devicePixelRatio;
+        this.canvas.height = browserScreen.height * window.devicePixelRatio;
+        this.canvas.style.width = `${browserScreen.width}px`;
+        this.canvas.style.height = `${browserScreen.height}px`;
 
         const context = this.canvas.getContext('2d');
         if (!context) return;
-
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        context.scale(window.devicePixelRatio, window.devicePixelRatio);
+        context.clearRect(0, 0, browserScreen.width, browserScreen.height);
         context.fillStyle = 'black';
-        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        context.fillRect(0, 0, browserScreen.width, browserScreen.height);
     }
 }
