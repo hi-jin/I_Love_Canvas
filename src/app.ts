@@ -1,5 +1,6 @@
 import BlackFullScreenAnimation from "./animations/black_full_screen_animation";
 import RoundRectAnimation from "./animations/round_rect_animation";
+import RoundRectTextAnimation from "./animations/round_rect_text_animation";
 import BrowserScreen from "./core/screen";
 import DrawStack from "./draw_stack/draw_stack";
 
@@ -19,9 +20,10 @@ export default class App {
     }
 
     private onClick(e: MouseEvent): void {
+        const text = prompt("");
         const ctx = this.canvas.getContext('2d');
-        if (ctx) {
-            this.stack.pushAndAnimate(new RoundRectAnimation(200, e.clientX, e.clientY, 100, 50, 10), ctx);
+        if (ctx && text) {
+            this.stack.pushAndAnimate(new RoundRectTextAnimation(200, e.clientX, e.clientY, text), ctx);
         }
     }
 
